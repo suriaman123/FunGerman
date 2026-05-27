@@ -1,4 +1,4 @@
-# FunGerman# Fun German
+#  FunGerman
 
 Fun German is a colourful and interactive language-learning gaming platform, focused on helping users learn German through fun mini-games.
 
