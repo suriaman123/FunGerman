@@ -13,9 +13,9 @@ The project is designed to eventually expand into:
 
 ---
 
-# ✨ Features
+#  Features
 
-## 🎯 German Atlas Game
+##  German Atlas Game
 
 ### Core Gameplay
 - User vs Computer
@@ -29,7 +29,7 @@ The project is designed to eventually expand into:
 
 ---
 
-# 🧠 Difficulty Levels
+#  Difficulty Levels
 
 The AI opponent only uses vocabulary from the selected CEFR German level and below:
 - A1
@@ -48,7 +48,7 @@ Users can use:
 
 ---
 
-# 🪙 Coin Toss System
+#  Coin Toss System 🪙
 
 Before the match:
 1. User chooses Heads or Tails
@@ -64,7 +64,7 @@ If Computer Wins:
 
 ---
 
-# ❤️ Life System
+#  Life System
 
 Users start with:
 ❤️ ❤️ ❤️
@@ -78,7 +78,7 @@ Game Over after losing all 3 hearts.
 
 ---
 
-# 🤖 Smart AI Rules
+#  Smart AI Rules
 
 The AI:
 - Uses only words from the selected CEFR level
@@ -87,7 +87,7 @@ The AI:
 
 ---
 
-# 📖 Interactive Vocabulary Cards
+#  Interactive Vocabulary Cards
 
 When users click on a computer-generated word:
 
@@ -116,14 +116,14 @@ Sentence: "Der Hund spielt im Garten."
 
 
 
-# 🧩 Additional Features (Working on it)
+#  Additional Features (Working on it)
 
-## 🔊 Pronunciation Audio
+##  Pronunciation Audio
 Click any word to hear native pronunciation.
 
 ---
 
-## 🏆 XP & Leveling System
+##  XP & Leveling System
 Users earn:
 - XP
 - Coins
@@ -132,26 +132,26 @@ Users earn:
 
 ---
 
-## 🔥 Daily Streaks
+##  Daily Streaks
 Reward users for daily practice.
 
 ---
 
-## 🧠 Smart Hints
-Players can use hint tokens to:
+##  Smart Hints
+Playrs can use hint tokens to:
 - Reveal first letter
 - Show possible words
 
 ---
 
-## 🌍 Multiplayer Mode (Future)
+##  Multiplayer Mode (Future)
 - Real-time battles
 - Friends leaderboard
 - Ranked matches
 
 ---
 
-## 👦 Kids Mode
+## Kids Mode
 - Simpler words
 - Slower timer
 - Bigger buttons
@@ -181,7 +181,7 @@ Players can use hint tokens to:
 
 ---
 
-# 🧠 Word Validation Logic
+# Word Validation Logic
 
 When user enters a word:
 
