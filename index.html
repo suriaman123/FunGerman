@@ -282,8 +282,8 @@
 </div>
 
 <script>
-const API_URL = "/api/claude";
-const MODEL = "claude-sonnet-4-20250514";
+const API_URL = "/api/gemini";
+const MODEL = "gemini-2.0-flash";
 
 // Dark mode
 const darkToggle = document.getElementById('dark-toggle');
@@ -314,18 +314,15 @@ let state = {
 
 // --- API helpers ---
 async function callClaude(messages, systemPrompt) {
+  const userMsg = messages[messages.length - 1]?.content || '';
+  const fullPrompt = systemPrompt ? systemPrompt + '\n\n' + userMsg : userMsg;
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 1000,
-      system: systemPrompt,
-      messages
-    })
+    body: JSON.stringify({ prompt: fullPrompt })
   });
   const data = await res.json();
-  return data.content?.[0]?.text || '';
+  return data.text || '';
 }
 
 async function validateUserWord(word, mustStartWith, level) {
