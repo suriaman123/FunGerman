@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fun German - Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#F7F6F2;
+    --card:#FFFFFF;
+    --primary:#58CC02;
+    --primary-dark:#46A502;
+    --primary-light:#E8F9D0;
+    --accent:#1CB0F6;
+    --accent-light:#D9F2FD;
+    --danger:#FF4B4B;
+    --danger-light:#FFEBEB;
+    --warn:#FFC800;
+    --warn-light:#FFF8DB;
+    --ink:#1F1F1F;
+    --ink2:#3C3C3C;
+    --muted:#8C8C8C;
+    --border:#E0DDD6;
+    --shadow:0 2px 16px rgba(0,0,0,0.08);
+    --shadow-lg:0 6px 32px rgba(0,0,0,0.12);
+    --radius:16px;
+    --radius-sm:10px;
+    /* Legacy aliases kept for compat */
+    --purple:var(--accent);
+    --purple-light:var(--accent-light);
+    --green:var(--primary-dark);
+    --green-light:var(--primary-light);
+    --red:var(--danger);
+    --red-light:var(--danger-light);
+    --amber:var(--warn);
+    --amber-light:var(--warn-light);
+    --blue:#1CB0F6;
+    --blue-light:#D9F2FD;
+    --pink:#FF6B8A;
+    --pink-light:#FFE8ED;
+    --text:var(--ink);
+  }
+  /* Dark mode */
+  body.dark{
+    --bg:#111318;
+    --card:#1E2028;
+    --primary:#58CC02;
+    --primary-dark:#46A502;
+    --primary-light:#1A2E0A;
+    --accent:#1CB0F6;
+    --accent-light:#0A2233;
+    --danger:#FF4B4B;
+    --danger-light:#2D0A0A;
+    --warn:#FFC800;
+    --warn-light:#2D2400;
+    --ink:#F0EFE9;
+    --ink2:#C8C7C1;
+    --muted:#666;
+    --border:#2E3038;
+    --shadow:0 2px 16px rgba(0,0,0,0.40);
+    --shadow-lg:0 6px 32px rgba(0,0,0,0.50);
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
+  h1,h2,.title-font{font-family:'DM Serif Display',serif}
+
+  /* Animated background */
+  .bg-shapes{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .shape{position:absolute;border-radius:50%;opacity:0.05;animation:float 10s ease-in-out infinite}
+  .shape:nth-child(1){width:320px;height:320px;background:var(--primary);top:-100px;left:-100px;animation-delay:0s}
+  .shape:nth-child(2){width:200px;height:200px;background:var(--accent);top:40%;right:-70px;animation-delay:3s}
+  .shape:nth-child(3){width:180px;height:180px;background:var(--warn);bottom:-60px;left:35%;animation-delay:5s}
+  .shape:nth-child(4){width:120px;height:120px;background:var(--primary);top:25%;left:65%;animation-delay:1.5s}
+  @keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.03)}}
+
+  .app{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:16px}
+  .app.game-active{padding:8px}
+
+  /* Dark mode toggle */
+  .dark-toggle{position:fixed;top:16px;right:16px;z-index:100;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--border);background:var(--card);box-shadow:var(--shadow);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .2s;color:var(--ink)}
+  .dark-toggle:hover{transform:scale(1.1);box-shadow:var(--shadow-lg)}
+
+  /* Header */
+  .header{text-align:center;padding:18px 0 12px}
+  .logo{font-family:'DM Serif Display',serif;font-size:2.4rem;color:var(--ink);letter-spacing:-0.5px;line-height:1}
+  .logo span{color:var(--primary)}
+  .logo-sub{font-size:0.9rem;color:var(--muted);margin-top:4px;font-weight:500;letter-spacing:0.5px}
+  
+  /* Setup screen */
+  .setup-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 24px 24px;border:1.5px solid var(--border)}
+  .section-title{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--ink);margin-bottom:12px}
+  .option-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .opt-btn{padding:8px 18px;border-radius:30px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .15s;color:var(--ink2)}
+  .opt-btn:hover{border-color:var(--primary);color:var(--primary-dark)}
+  .opt-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 2px 10px rgba(88,204,2,0.30)}
+  .start-btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--primary);color:#fff;font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:0.3px;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 0 var(--primary-dark);margin-top:6px}
+  .start-btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--primary-dark)}
+  .start-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--primary-dark)}
+
+  /* Coin toss */
+  .toss-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:32px 24px;text-align:center;border:1.5px solid var(--border)}
+  .coin-wrap{margin:24px auto;width:120px;height:120px;position:relative}
+  .coin{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:3rem;cursor:pointer;transition:transform .1s;border:3px solid var(--warn);background:linear-gradient(145deg,#FFF3CC,#FFE066);box-shadow:0 4px 0 #C9960055}
+  .coin:hover{transform:scale(1.06)}
+  .coin.spinning{animation:coinSpin .6s linear}
+  @keyframes coinSpin{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+  .toss-choices{display:flex;gap:16px;justify-content:center;margin:20px 0}
+  .toss-btn{padding:12px 28px;border-radius:12px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;border:2px solid;transition:all .15s}
+  .toss-btn.heads{background:var(--warn-light);border-color:var(--warn);color:#856A00;box-shadow:0 3px 0 #C9960055}
+  .toss-btn.tails{background:var(--accent-light);border-color:var(--accent);color:#0A6A99;box-shadow:0 3px 0 #1CB0F655}
+  .toss-btn:hover{transform:translateY(-2px)}
+  .toss-btn:active{transform:translateY(1px)}
+  .toss-result{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-top:14px;min-height:36px}
+
+  /* Game screen */
+  .game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .hearts{display:flex;gap:6px}
+  .heart{font-size:1.6rem;transition:all .3s}
+  .heart.lost{filter:grayscale(1);opacity:0.30;transform:scale(0.8)}
+  .timer-wrap{display:flex;align-items:center;gap:6px;font-weight:700;color:var(--muted)}
+  .timer{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--ink);min-width:46px;text-align:center}
+  .timer.urgent{color:var(--danger);animation:pulse .5s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+  .level-badge{background:var(--primary-light);color:var(--primary-dark);border-radius:20px;padding:5px 14px;font-weight:700;font-size:0.82rem;letter-spacing:0.3px}
+  
+  /* Word chain */
+  .chain-area{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;min-height:80px;max-height:210px;overflow-y:auto;border:1.5px solid var(--border)}
+  .chain-word{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;margin:3px;font-weight:600;font-size:0.92rem;cursor:default;transition:transform .15s}
+  .chain-word.user-word{background:var(--accent-light);color:#0A6A99;border:1.5px solid var(--accent)}
+  .chain-word.computer-word{background:var(--primary-light);color:var(--primary-dark);border:1.5px solid var(--primary);cursor:pointer}
+  .chain-word.computer-word:hover{transform:scale(1.05)}
+  .chain-arrow{color:var(--muted);font-size:1rem}
+  .chain-prompt{color:var(--muted);font-style:italic;font-size:0.9rem}
+  
+  /* Current letter indicator */
+  .letter-prompt{text-align:center;margin-bottom:14px;padding:16px;background:var(--warn-light);border-radius:14px;border:1.5px solid var(--warn)}
+  .letter-big{font-family:'DM Serif Display',serif;font-size:3rem;color:#856A00;display:inline-block;animation:bounce .6s ease-in-out}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .letter-hint{font-size:0.88rem;color:#A08000;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px}
+
+  /* Starting letters choice */
+  .start-letters{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+  .letter-choice{width:52px;height:52px;border-radius:12px;border:2px solid var(--border);background:var(--bg);font-family:'DM Serif Display',serif;font-size:1.6rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;color:var(--ink);box-shadow:0 2px 0 var(--border)}
+  .letter-choice:hover{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark);transform:translateY(-3px);box-shadow:0 4px 0 var(--primary)}
+
+  /* Input */
+  .input-area{display:flex;gap:10px;margin-bottom:12px}
+  .word-input{flex:1;padding:13px 18px;border-radius:12px;border:2px solid var(--border);font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;outline:none;transition:border-color .2s,box-shadow .2s;background:var(--card);color:var(--ink)}
+  .word-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+  .submit-btn{padding:13px 22px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;transition:all .15s;white-space:nowrap;box-shadow:0 3px 0 #0A88C5}
+  .submit-btn:hover{transform:translateY(-2px);box-shadow:0 5px 0 #0A88C5}
+  .submit-btn:active{transform:translateY(1px);box-shadow:0 1px 0 #0A88C5}
+  .submit-btn:disabled{opacity:0.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+  /* Feedback toast */
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:11px 24px;border-radius:30px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;z-index:999;pointer-events:none;opacity:0;transition:opacity .25s;letter-spacing:0.1px}
+  .toast.show{opacity:1}
+  .toast.ok{background:var(--primary);color:#fff;box-shadow:0 3px 12px rgba(88,204,2,0.4)}
+  .toast.err{background:var(--danger);color:#fff;box-shadow:0 3px 12px rgba(255,75,75,0.4)}
+  .toast.info{background:var(--accent);color:#fff;box-shadow:0 3px 12px rgba(28,176,246,0.4)}
+
+  /* Flashcard modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.40);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+  .modal-overlay.open{opacity:1;pointer-events:all}
+
+  /* Surrender / action row */
+  .action-row{display:flex;gap:10px;justify-content:center;margin-top:6px}
+  .surrender-btn{padding:9px 20px;border-radius:30px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer;transition:all .15s}
+  .surrender-btn:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-light)}
+
+  /* End screen */
+  .end-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px 24px;text-align:center;border:1.5px solid var(--border)}
+  .end-emoji{font-size:4rem;margin-bottom:12px;display:block}
+  .end-title{font-family:'DM Serif Display',serif;font-size:2rem;margin-bottom:8px}
+  .end-stats{background:var(--bg);border-radius:12px;padding:14px 20px;margin:14px 0;text-align:left;font-weight:600;border:1.5px solid var(--border);display:flex;flex-direction:column;gap:6px;font-size:0.95rem}
+  .play-again-btn{padding:14px 40px;border-radius:14px;border:none;background:var(--primary);color:#fff;font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.1rem;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 var(--primary-dark);transition:all .15s}
+  .play-again-btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--primary-dark)}
+  .play-again-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--primary-dark)}
+
+  /* thinking indicator */
+  .thinking{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:20px;background:var(--primary-light);color:var(--primary-dark);font-weight:700;font-size:0.88rem;margin-bottom:10px;width:fit-content;border:1.5px solid var(--primary)}
+  .thinking-dots span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--primary-dark);margin:0 1.5px;animation:blink 1.2s infinite}
+  .thinking-dots span:nth-child(2){animation-delay:.2s}
+  .thinking-dots span:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:0.3}40%{opacity:1}}
+
+  .word-count{font-size:0.82rem;color:var(--muted);text-align:center;margin-bottom:8px;font-weight:500}
+
+  /* ===== CHAT GAME SCREEN ===== */
+  .game-screen-wrap{display:flex;flex-direction:column;height:calc(100vh - 120px);max-height:680px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-lg);border:1.5px solid var(--border);overflow:hidden}
+  
+  /* Top status bar */
+  .game-status-bar{background:var(--bg);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid var(--border);flex-shrink:0}
+  .gs-surrender{background:var(--card);color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.82rem;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);cursor:pointer;transition:all .15s}
+  .gs-surrender:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-light)}
+  .gs-timer-pill{display:flex;align-items:center;gap:6px;background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-weight:800;color:var(--ink);font-size:0.95rem}
+  .gs-timer-pill .t-val{font-family:'DM Serif Display',serif;font-size:1.2rem;min-width:32px;text-align:center}
+  .gs-timer-pill .t-val.urgent{color:var(--danger);animation:pulse .5s ease-in-out infinite}
+  .gs-hearts{display:flex;gap:4px;font-size:1.4rem}
+  .gs-hearts .h{transition:all .3s}
+  .gs-hearts .h.lost{filter:grayscale(1);opacity:0.28;transform:scale(0.8)}
+
+  /* Chat board */
+  .chat-board{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+  .chat-board::-webkit-scrollbar{width:4px}
+  .chat-board::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+  /* Bubbles */
+  .bubble-row{display:flex;align-items:flex-end;gap:8px}
+  .bubble-row.user{flex-direction:row-reverse}
+  .bubble-avatar{font-size:1.6rem;flex-shrink:0;line-height:1}
+  .bubble{padding:10px 16px;border-radius:20px;font-weight:700;font-size:1.05rem;max-width:72%;line-height:1.4;position:relative}
+  .bubble.user-bubble{background:var(--primary);color:#fff;border-radius:20px 20px 4px 20px;box-shadow:0 3px 0 var(--primary-dark)}
+  .bubble.comp-bubble{background:var(--accent);color:#fff;border-radius:20px 20px 20px 4px;cursor:pointer;box-shadow:0 3px 0 #0A88C5;transition:transform .15s,filter .15s}
+  .bubble.comp-bubble:hover{transform:scale(1.03);filter:brightness(1.08)}
+  .bubble .last-letter{color:#FFE066;text-decoration:underline;font-weight:900}
+  .bubble .tap-hint{display:block;font-size:0.68rem;font-weight:500;opacity:0.75;margin-top:3px}
+  .sys-msg{text-align:center;font-size:0.82rem;font-weight:700;color:var(--muted);padding:2px 0}
+  .bubble.thinking-bubble{background:var(--primary-light);color:var(--primary-dark);border:1.5px solid var(--primary);box-shadow:none;display:flex;align-items:center;gap:8px;padding:10px 16px}
+
+  /* Bottom dock */
+  .game-dock{padding:14px 16px;background:var(--card);border-top:1.5px solid var(--border);flex-shrink:0}
+  .dock-letter-hint{font-size:0.8rem;font-weight:700;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px;letter-spacing:0.3px}
+  .dock-letter-badge{background:var(--accent);color:#fff;border-radius:20px;padding:2px 12px;font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:normal;letter-spacing:1px}
+  .dock-input-row{display:flex;gap:8px}
+  .dock-input{flex:1;padding:12px 16px;border-radius:12px;border:2px solid var(--border);font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;outline:none;background:var(--bg);color:var(--ink);transition:border-color .2s,box-shadow .2s}
+  .dock-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+  .dock-send{padding:12px 20px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 3px 0 var(--primary-dark);transition:all .15s;white-space:nowrap}
+  .dock-send:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--primary-dark)}
+  .dock-send:active{transform:translateY(1px);box-shadow:0 1px 0 var(--primary-dark)}
+  .dock-send:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+  /* Cue card modal — updated */
+  .cue-card{background:var(--card);border-radius:var(--radius);padding:26px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg);position:relative;border:1.5px solid var(--warn);transform:translateY(20px);transition:transform .25s}
+  .modal-overlay.open .cue-card{transform:translateY(0)}
+  .cue-word-row{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .article-badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#fff}
+  .article-badge.der{background:#1CB0F6}
+  .article-badge.die{background:#FF6B8A}
+  .article-badge.das{background:#58CC02}
+  .cue-word{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--ink)}
+  .cue-speak-btn{margin-left:auto;background:var(--bg);border:1.5px solid var(--border);border-radius:50%;width:36px;height:36px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .cue-speak-btn:hover{background:var(--warn-light);border-color:var(--warn)}
+  .cue-level{display:inline-block;background:var(--warn-light);color:#856A00;border-radius:8px;padding:3px 10px;font-size:0.75rem;font-weight:700;margin-bottom:14px;letter-spacing:0.4px}
+  .cue-def-label{font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px}
+  .cue-def{font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:14px}
+  .cue-example{background:var(--warn-light);border-left:3px solid var(--warn);border-radius:8px;padding:10px 14px}
+  .cue-example-label{font-size:0.7rem;font-weight:700;color:#856A00;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px}
+  .cue-example-de{font-style:italic;color:var(--ink2);font-size:0.92rem;margin-bottom:4px}
+  .cue-example-en{font-size:0.82rem;color:var(--muted);font-weight:600}
+  .modal-close{position:absolute;top:12px;right:14px;background:var(--bg);border:1.5px solid var(--border);border-radius:50%;width:30px;height:30px;font-size:1rem;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .modal-close:hover{background:var(--danger-light);color:var(--danger)}
+  .modal-loading{text-align:center;padding:24px 0;color:var(--muted);font-size:0.95rem}
+  .dots{display:inline-block;animation:dotdot 1.2s infinite}
+  @keyframes dotdot{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
+
+  @media(max-width:480px){
+    .logo{font-size:1.9rem}
+    .game-screen-wrap{height:calc(100vh - 100px);border-radius:12px}
+    .bubble{font-size:0.95rem}
+  }
+</style>
+</head>
+<body>
+<div class="bg-shapes">
+  <div class="shape"></div><div class="shape"></div><div class="shape"></div><div class="shape"></div>
+</div>
+
+<button class="dark-toggle" id="dark-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">💡</button>
+
+<div class="app" id="app"></div>
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modal">
+  <div class="cue-card">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content">
+      <div class="modal-loading">Loading<span class="dots">...</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = "/api/claude";
+const MODEL = "claude-sonnet-4-20250514";
+
+// Dark mode
+const darkToggle = document.getElementById('dark-toggle');
+let darkMode = localStorage.getItem('darkMode') === 'true';
+function applyDark() {
+  document.body.classList.toggle('dark', darkMode);
+  darkToggle.textContent = darkMode ? '🌙' : '💡';
+}
+applyDark();
+darkToggle.addEventListener('click', () => { darkMode = !darkMode; localStorage.setItem('darkMode', darkMode); applyDark(); });
+
+let state = {
+  screen: 'setup', // setup | toss | choose-letter | game | end
+  language: 'German',
+  level: 'A1',
+  chain: [], // [{word, source:'user'|'computer', letter_shown}]
+  hearts: 3,
+  timer: 60,
+  timerInterval: null,
+  currentLetter: '',
+  isComputing: false,
+  totalWords: 0,
+  gameResult: '', // 'win' | 'lose' | 'surrender'
+  startLetters: [],
+  selectedStartLetter: '',
+  consecutiveWrong: 0,
+};
+
+// --- API helpers ---
+async function callClaude(messages, systemPrompt) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages
+    })
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || '';
+}
+
+async function validateUserWord(word, mustStartWith, level) {
+  const sys = `You are a German language expert. Respond ONLY with a JSON object, no markdown.`;
+  const msg = `Check if "${word}" is a valid German noun/word that starts with the letter "${mustStartWith.toUpperCase()}" (case-insensitive check on first letter).
+Return JSON: {"valid": true/false, "reason": "brief reason if invalid", "is_german": true/false}
+A word is valid if: it exists in German vocabulary AND starts with "${mustStartWith}". Proper nouns are allowed. Accept any German word.`;
+  try {
+    const txt = await callClaude([{role:'user',content:msg}], sys);
+    const clean = txt.replace(/```json|```/g,'').trim();
+    return JSON.parse(clean);
+  } catch(e) { return {valid: true, is_german: true}; }
+}
+
+async function getComputerWord(mustStartWith, level, usedWords) {
+  const sys = `You are a German language teacher. Respond ONLY with a JSON object.`;
+  const usedStr = usedWords.length ? `Avoid these already-used words: ${usedWords.join(', ')}.` : '';
+  const levelDesc = {A1:'very basic (colors, numbers, body parts, family, food, animals, days)',A2:'elementary (house, school, weather, hobbies, simple verbs)',B1:'intermediate (work, travel, health, environment, common idioms)',B2:'upper-intermediate (abstract nouns, compound words, formal vocabulary)',C1:'advanced (technical terms, nuanced vocabulary, less common words)',C2:'mastery (rare, sophisticated, literary vocabulary)'};
+  const msg = `Give me a German word at level ${level} (${levelDesc[level]||'common vocabulary'}) that starts with the letter "${mustStartWith.toUpperCase()}".
+${usedStr}
+The word should be appropriate for a vocabulary game. Include its article if it's a noun (der/die/das).
+Return JSON: {"word": "the German word without article for game use", "display": "article + word if noun, else just word", "definition_en": "short English definition", "example_de": "one example sentence in German", "example_en": "English translation of example"}
+If NO word exists at this level for this letter, return: {"word": null, "concede": true}`;
+  try {
+    const txt = await callClaude([{role:'user',content:msg}], sys);
+    const clean = txt.replace(/```json|```/g,'').trim();
+    return JSON.parse(clean);
+  } catch(e) { return {word: null, concede: true}; }
+}
+
+async function getWordInfo(word, level) {
+  const sys = `You are a German language teacher. Respond ONLY with JSON.`;
+  const msg = `Give me information about the German word "${word}".
+Return JSON: {"word":"${word}", "display":"article + word if noun", "definition_en":"clear English definition", "example_de":"example sentence in German using this word", "example_en":"English translation", "level":"CEFR level"}`;
+  try {
+    const txt = await callClaude([{role:'user',content:msg}], sys);
+    const clean = txt.replace(/```json|```/g,'').trim();
+    return JSON.parse(clean);
+  } catch(e) { return null; }
+}
+
+async function getStartLetters() {
+  const sys = `You are a helpful assistant. Respond only with JSON.`;
+  const msg = `Give me 5 random German alphabet letters (uppercase) that are good starting letters for German words at ${state.level} level vocabulary. Include at least some vowels.
+Return JSON: {"letters": ["A","B","C","D","E"]}`;
+  try {
+    const txt = await callClaude([{role:'user',content:msg}], sys);
+    const clean = txt.replace(/```json|```/g,'').trim();
+    const data = JSON.parse(clean);
+    return data.letters || ['A','E','I','S','T'];
+  } catch(e) { return ['A','E','I','S','T']; }
+}
+
+// --- Toast ---
+let toastTimer;
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.className='toast'; }, 2500);
+}
+
+// --- Cue Card Modal ---
+async function openWordModal(word) {
+  const modal = document.getElementById('modal');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `<div class="modal-loading">Loading <b>${word}</b><span class="dots">...</span></div>`;
+  modal.classList.add('open');
+  const info = await getWordInfo(word, state.level);
+  if(!info){ content.innerHTML=`<div class="modal-loading">Couldn't load info for <b>${word}</b></div>`; return; }
+  const article = (info.display||'').split(' ')[0]?.toLowerCase();
+  const articleClass = ['der','die','das'].includes(article) ? article : 'das';
+  const articleLabel = ['der','die','das'].includes(article) ? article.toUpperCase() : '';
+  content.innerHTML = `
+    <div class="cue-word-row">
+      ${articleLabel ? `<span class="article-badge ${articleClass}">${articleLabel}</span>` : ''}
+      <span class="cue-word">${info.word || word}</span>
+      <button class="cue-speak-btn" onclick="speakWord('${articleLabel}','${info.word||word}')">🔊</button>
+    </div>
+    <div class="cue-level">${info.level||state.level}</div>
+    <div class="cue-def-label">Meaning</div>
+    <div class="cue-def">${info.definition_en}</div>
+    <div class="cue-example">
+      <div class="cue-example-label">Example Sentence</div>
+      <div class="cue-example-de">${info.example_de}</div>
+      <div class="cue-example-en">${info.example_en}</div>
+    </div>
+  `;
+}
+function speakWord(article, word) {
+  const utt = new SpeechSynthesisUtterance(`${article} ${word}`);
+  utt.lang = 'de-DE';
+  window.speechSynthesis.speak(utt);
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', e=>{ if(e.target===document.getElementById('modal')) closeModal(); });
+
+// --- Timer ---
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timer = 60;
+  state.timerInterval = setInterval(()=>{
+    state.timer--;
+    renderTimerOnly();
+    if(state.timer <= 0) { clearInterval(state.timerInterval); handleTimeout(); }
+  }, 1000);
+}
+function stopTimer() { clearInterval(state.timerInterval); }
+
+function renderTimerOnly() {
+  const el = document.getElementById('timer-display');
+  if(el) {
+    el.textContent = state.timer + 's';
+    el.className = 't-val' + (state.timer <= 10 ? ' urgent' : '');
+  }
+}
+
+function handleTimeout() {
+  state.hearts--;
+  state.consecutiveWrong++;
+  appendSysMsg('⏰ Time up! Lost a heart! (-1 ❤️)');
+  const hs = document.querySelectorAll('.gs-hearts .h');
+  hs.forEach((h,i)=>{ if(i>=state.hearts) h.classList.add('lost'); });
+  if(state.hearts <= 0 || state.consecutiveWrong >= 3) { endGame('lose'); return; }
+  const inp = document.getElementById('word-input');
+  if(inp){ inp.disabled = false; inp.value = ''; inp.focus(); }
+  const btn = document.getElementById('submit-btn');
+  if(btn) btn.disabled = false;
+  startTimer();
+}
+
+// --- Last letter of word ---
+function lastLetter(word) {
+  const clean = word.replace(/[^a-zA-ZäöüÄÖÜß]/g,'');
+  return clean[clean.length-1]?.toUpperCase() || '';
+}
+
+// --- Game actions ---
+async function handleUserSubmit() {
+  const input = document.getElementById('word-input');
+  if(!input) return;
+  const word = input.value.trim();
+  if(!word || state.isComputing) return;
+
+  stopTimer();
+  state.isComputing = true;
+  input.disabled = true;
+  document.getElementById('submit-btn').disabled = true;
+
+  const result = await validateUserWord(word, state.currentLetter, state.level);
+  
+  if(!result.valid || !result.is_german) {
+    state.hearts--;
+    state.consecutiveWrong++;
+    appendSysMsg(`💥 ${result.reason || 'Not a valid German word!'} (-1 ❤️)`);
+    // update hearts display
+    const hs = document.querySelectorAll('.gs-hearts .h');
+    hs.forEach((h,i)=>{ if(i>=state.hearts) h.classList.add('lost'); });
+    state.isComputing = false;
+    if(state.hearts <= 0 || state.consecutiveWrong >= 3) { endGame('lose'); return; }
+    input.disabled = false;
+    input.value = '';
+    input.focus();
+    document.getElementById('submit-btn').disabled = false;
+    startTimer();
+    return;
+  }
+
+  state.consecutiveWrong = 0;
+  const wordEntry = {word: word.toLowerCase(), display: word, source:'user'};
+  state.chain.push(wordEntry);
+  state.totalWords++;
+  state.currentLetter = lastLetter(word);
+  appendBubble('user', word, word.toLowerCase());
+  input.value = '';
+
+  await computerTurn();
+}
+
+async function computerTurn() {
+  state.isComputing = true;
+  // disable input
+  const inp = document.getElementById('word-input');
+  const btn = document.getElementById('submit-btn');
+  if(inp) inp.disabled = true;
+  if(btn) btn.disabled = true;
+  showThinkingBubble();
+
+  const usedWords = state.chain.map(c=>c.word);
+  const compWord = await getComputerWord(state.currentLetter, state.level, usedWords);
+
+  removeThinkingBubble();
+
+  if(!compWord || compWord.concede || !compWord.word) {
+    appendSysMsg('🏳️ Bello ran out of words — you win! 🏆');
+    endGame('win');
+    return;
+  }
+
+  const entry = {
+    word: compWord.word.toLowerCase(),
+    display: compWord.display || compWord.word,
+    source: 'computer',
+    info: compWord
+  };
+  state.chain.push(entry);
+  state.totalWords++;
+  state.currentLetter = lastLetter(compWord.word);
+  state.isComputing = false;
+
+  appendBubble('computer', entry.display, entry.word);
+  appendSysMsg(`👉 Your turn — word must start with <b>${state.currentLetter}</b>`);
+  updateDockLetter(state.currentLetter);
+  startTimer();
+}
+
+function endGame(result) {
+  stopTimer();
+  state.gameResult = result;
+  state.screen = 'end';
+  state.isComputing = false;
+  render();
+}
+
+function handleSurrender() {
+  stopTimer();
+  endGame('surrender');
+}
+
+// --- Main render ---
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  app.className = state.screen === 'game' ? 'app game-active' : 'app';
+
+  if(state.screen !== 'game') {
+    const hdr = document.createElement('div');
+    hdr.className = 'header';
+    hdr.innerHTML = `<div class="logo">Fun<span>German</span></div><div class="logo-sub">🇩🇪 Das Wörter-Abenteuer</div>`;
+    app.appendChild(hdr);
+  }
+
+  if(state.screen === 'setup') renderSetup(app);
+  else if(state.screen === 'toss') renderToss(app);
+  else if(state.screen === 'choose-letter') renderChooseLetter(app);
+  else if(state.screen === 'game') renderGame(app);
+  else if(state.screen === 'end') renderEnd(app);
+}
+
+function renderSetup(app) {
+  const card = document.createElement('div');
+  card.className = 'setup-card';
+  card.innerHTML = `
+    <div class="section-title">🌍 Choose Language</div>
+    <div class="option-row">
+      <button class="opt-btn active" id="lang-de">🇩🇪 German</button>
+      <button class="opt-btn" style="opacity:.5;cursor:not-allowed" title="Coming soon">🇫🇷 French (soon)</button>
+      <button class="opt-btn" style="opacity:.5;cursor:not-allowed" title="Coming soon">🇪🇸 Spanish (soon)</button>
+    </div>
+    <div class="section-title">🎓 Computer Level</div>
+    <div class="option-row" id="level-opts">
+      ${['A1','A2','B1','B2','C1','C2'].map(l=>`<button class="opt-btn level-btn ${l===state.level?'active':''}" data-level="${l}">${l}</button>`).join('')}
+    </div>
+    <div style="background:var(--primary-light);border-radius:12px;padding:14px 16px;margin-bottom:18px;border:1.5px solid var(--primary)">
+      <b style="color:var(--primary-dark)">🎮 How to play Atlas:</b><br>
+      <span style="font-size:0.88rem;color:var(--ink2);line-height:1.6">Win the coin toss → pick a starting letter. Each player must say a German word starting with the last letter of the previous word. Computer uses ${state.level} vocabulary. You have 60 seconds and 3 hearts. Click any computer word for a flashcard! 📚</span>
+    </div>
+    <button class="start-btn" id="start-btn">🚀 Start Spielen!</button>
+  `;
+  app.appendChild(card);
+
+  card.querySelectorAll('.level-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      state.level = btn.dataset.level;
+      card.querySelectorAll('.level-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  card.querySelector('#start-btn').addEventListener('click', ()=>{
+    state.screen = 'toss';
+    render();
+  });
+}
+
+function renderToss(app) {
+  const card = document.createElement('div');
+  card.className = 'toss-card';
+  card.innerHTML = `
+    <div class="title-font" style="font-size:1.7rem;color:var(--ink);margin-bottom:6px">🪙 Coin Toss!</div>
+    <div style="color:var(--muted);margin-bottom:10px;font-size:0.95rem">Choose your side, then flip the coin!</div>
+    <div class="coin-wrap"><div class="coin" id="coin">🪙</div></div>
+    <div class="toss-choices">
+      <button class="toss-btn heads" id="btn-heads">👑 Heads</button>
+      <button class="toss-btn tails" id="btn-tails">🦅 Tails</button>
+    </div>
+    <div class="toss-result" id="toss-result"></div>
+  `;
+  app.appendChild(card);
+
+  let chosen = null;
+  card.querySelector('#btn-heads').addEventListener('click',()=>{ chosen='heads'; flip(); });
+  card.querySelector('#btn-tails').addEventListener('click',()=>{ chosen='tails'; flip(); });
+
+  function flip() {
+    if(!chosen) return;
+    const coin = card.querySelector('#coin');
+    coin.classList.add('spinning');
+    const resultEl = card.querySelector('#toss-result');
+    resultEl.textContent = '';
+    setTimeout(()=>{
+      coin.classList.remove('spinning');
+      const outcomes = ['heads','tails'];
+      const result = outcomes[Math.floor(Math.random()*2)];
+      const userWon = chosen === result;
+      coin.textContent = result==='heads'?'👑':'🦅';
+      if(userWon) {
+        resultEl.innerHTML = `<span style="color:var(--primary-dark)">🎉 You won the toss!</span><br><span style="font-size:0.9rem;color:var(--muted)">Pick your starting letter!</span>`;
+        setTimeout(async()=>{ 
+          state.startLetters = await getStartLetters();
+          state.screen = 'choose-letter';
+          render();
+        }, 1500);
+      } else {
+        resultEl.innerHTML = `<span style="color:var(--danger)">😅 Computer goes first!</span><br><span style="font-size:0.9rem;color:var(--muted)">Preparing first word...</span>`;
+        setTimeout(async()=>{
+          state.screen = 'game';
+          state.chain = [];
+          state.hearts = 3;
+          state.consecutiveWrong = 0;
+          const letters = 'ABCDEFGHIKLMNOPRSTW'.split('');
+          const randomLetter = letters[Math.floor(Math.random()*letters.length)];
+          state.currentLetter = randomLetter;
+          state.isComputing = true;
+          render();
+          // Small delay so DOM is ready, then computer plays
+          setTimeout(()=>{ computerTurn(); }, 80);
+        }, 1800);
+      }
+    }, 700);
+  }
+}
+
+function renderChooseLetter(app) {
+  const card = document.createElement('div');
+  card.className = 'toss-card';
+  card.innerHTML = `
+    <div class="title-font" style="font-size:1.5rem;color:var(--ink);margin-bottom:8px">🅰️ Pick Your Starting Letter</div>
+    <div style="color:var(--muted);margin-bottom:16px;font-size:0.9rem">Choose a letter — your first word must start with it!</div>
+    <div class="start-letters" id="letter-choices">
+      ${state.startLetters.map(l=>`<button class="letter-choice" data-letter="${l}">${l}</button>`).join('')}
+    </div>
+  `;
+  app.appendChild(card);
+  
+  card.querySelectorAll('.letter-choice').forEach(btn=>{
+    btn.addEventListener('click', async()=>{
+      state.selectedStartLetter = btn.dataset.letter;
+      state.currentLetter = btn.dataset.letter;
+      state.chain = [];
+      state.hearts = 3;
+      state.consecutiveWrong = 0;
+      state.isComputing = false;
+      state.screen = 'game';
+      render();
+      setTimeout(()=>{ startTimer(); }, 80);
+    });
+  });
+}
+
+function renderGame(app) {
+  // Remove header for game screen — full-height layout
+  app.querySelector('.header')?.remove();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'game-screen-wrap';
+  wrap.id = 'game-screen-wrap';
+
+  // Status bar
+  const bar = document.createElement('div');
+  bar.className = 'game-status-bar';
+  bar.innerHTML = `
+    <button class="gs-surrender" id="gs-surr">🏳️ Surrender</button>
+    <div class="gs-timer-pill">⏱ <span class="t-val" id="timer-display">${state.timer}s</span></div>
+    <div class="gs-hearts">
+      ${[0,1,2].map(i=>`<span class="h ${i>=state.hearts?'lost':''}">❤️</span>`).join('')}
+    </div>
+  `;
+  wrap.appendChild(bar);
+
+  // Chat board
+  const board = document.createElement('div');
+  board.className = 'chat-board';
+  board.id = 'chat-board';
+
+  // Replay chain messages that already exist (e.g. computer went first)
+  if(state.chain.length === 0) {
+    appendSysMsg(`🎈 Your word must start with <b>${state.currentLetter}</b>. Viel Glück!`, board);
+  } else {
+    state.chain.forEach(item => {
+      appendBubble(item.source, item.display, item.word, board);
+    });
+    appendSysMsg(`👉 Your turn — word must start with <b>${state.currentLetter}</b>`, board);
+  }
+  wrap.appendChild(board);
+
+  // Bottom dock
+  const dock = document.createElement('div');
+  dock.className = 'game-dock';
+  dock.id = 'game-dock';
+  dock.innerHTML = `
+    <div class="dock-letter-hint">Your word must start with: <span class="dock-letter-badge" id="dock-letter">${state.currentLetter}</span></div>
+    <div class="dock-input-row">
+      <input class="dock-input" id="word-input" placeholder="Type a German word…" maxlength="40" autocomplete="off" autocapitalize="off" ${state.isComputing?'disabled':''}>
+      <button class="dock-send" id="submit-btn" ${state.isComputing?'disabled':''}>🚀 Go!</button>
+    </div>
+  `;
+  wrap.appendChild(dock);
+  app.appendChild(wrap);
+
+  if(state.isComputing) showThinkingBubble();
+
+  // Events
+  bar.querySelector('#gs-surr').addEventListener('click', ()=>{ if(confirm('Aufgeben? 🏳️')) handleSurrender(); });
+  const inp = dock.querySelector('#word-input');
+  const btn = dock.querySelector('#submit-btn');
+  if(!state.isComputing){ inp.focus(); }
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter') handleUserSubmit(); });
+  btn.addEventListener('click', handleUserSubmit);
+}
+
+// --- Chat helpers ---
+function getChatBoard() { return document.getElementById('chat-board'); }
+
+function appendBubble(source, displayText, rawWord, board) {
+  board = board || getChatBoard();
+  if(!board) return;
+  const isUser = source === 'user';
+  const row = document.createElement('div');
+  row.className = `bubble-row ${isUser ? 'user' : ''}`;
+
+  // Highlight last letter
+  let html = displayText;
+  if(displayText.length > 1) {
+    html = `${displayText.slice(0,-1)}<span class="last-letter">${displayText.slice(-1)}</span>`;
+  }
+
+  row.innerHTML = `
+    <span class="bubble-avatar">${isUser ? '🧑' : '🐶'}</span>
+    <div class="bubble ${isUser ? 'user-bubble' : 'comp-bubble'}" ${!isUser ? `onclick="openWordModal('${rawWord}')" title="Tap for flashcard"` : ''}>
+      ${html}
+      ${!isUser ? '<span class="tap-hint">ℹ️ Tap to view flashcard</span>' : ''}
+    </div>
+  `;
+  board.appendChild(row);
+  board.scrollTop = board.scrollHeight;
+}
+
+function appendSysMsg(html, board) {
+  board = board || getChatBoard();
+  if(!board) return;
+  const div = document.createElement('div');
+  div.className = 'sys-msg';
+  div.innerHTML = html;
+  board.appendChild(div);
+  board.scrollTop = board.scrollHeight;
+}
+
+function showThinkingBubble() {
+  const board = getChatBoard();
+  if(!board) return;
+  const row = document.createElement('div');
+  row.className = 'bubble-row';
+  row.id = 'thinking-row';
+  row.innerHTML = `
+    <span class="bubble-avatar">🐶</span>
+    <div class="bubble thinking-bubble">
+      Thinking<span class="thinking-dots"><span></span><span></span><span></span></span>
+    </div>
+  `;
+  board.appendChild(row);
+  board.scrollTop = board.scrollHeight;
+}
+
+function removeThinkingBubble() {
+  document.getElementById('thinking-row')?.remove();
+}
+
+function updateDockLetter(letter) {
+  const badge = document.getElementById('dock-letter');
+  if(badge) badge.textContent = letter;
+  const inp = document.getElementById('word-input');
+  if(inp){ inp.placeholder = `Type a German word starting with ${letter}…`; inp.disabled = false; inp.focus(); }
+  const btn = document.getElementById('submit-btn');
+  if(btn) btn.disabled = false;
+}
+
+function renderEnd(app) {
+  const isWin = state.gameResult === 'win';
+  const isSurrender = state.gameResult === 'surrender';
+  const card = document.createElement('div');
+  card.className = 'end-card';
+
+  // Build mini chain replay HTML using bubble chips
+  const chainHtml = state.chain.length > 0 ? `
+    <div style="margin:14px 0 6px;font-size:0.82rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Word Chain — tap 🤖 words for flashcards</div>
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px;max-height:140px;overflow-y:auto;display:flex;flex-wrap:wrap;gap:6px;">
+      ${state.chain.map(item=>`
+        <span class="chain-word ${item.source==='user'?'user-word':'computer-word'}"
+          ${item.source==='computer'?`onclick="openWordModal('${item.word}')" style="cursor:pointer" title="Tap for flashcard"`:''}>
+          ${item.source==='user'?'🧑':'🐶'} ${item.display}
+        </span>`).join('')}
+    </div>` : '';
+
+  card.innerHTML = `
+    <span class="end-emoji">${isWin?'🏆':isSurrender?'🏳️':'💔'}</span>
+    <div class="end-title" style="color:${isWin?'var(--primary-dark)':isSurrender?'var(--warn)':'var(--danger)'}">${isWin?'Du hast gewonnen!':isSurrender?'Aufgegeben!':'Spiel vorbei!'}</div>
+    <div style="color:var(--muted);margin-bottom:10px;font-size:0.95rem">${isWin?'Bello ran out of words. Incredible vocabulary!':isSurrender?'No shame in that. Practice makes perfect!':'Better luck next time — keep learning!'}</div>
+    <div class="end-stats">
+      <div>🔤 Words played: <b>${state.totalWords}</b></div>
+      <div>❤️ Hearts remaining: <b>${Math.max(0,state.hearts)}/3</b></div>
+      <div>🎓 Level played: <b>${state.level}</b></div>
+      <div>📚 Chain length: <b>${state.chain.length} words</b></div>
+    </div>
+    ${chainHtml}
+    <button class="play-again-btn" id="play-again">🎮 Play Again!</button>
+  `;
+  app.appendChild(card);
+  card.querySelector('#play-again').addEventListener('click', ()=>{
+    state = {screen:'setup',language:'German',level:state.level,chain:[],hearts:3,timer:60,timerInterval:null,currentLetter:'',isComputing:false,totalWords:0,gameResult:'',startLetters:[],selectedStartLetter:'',consecutiveWrong:0};
+    render();
+  });
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
