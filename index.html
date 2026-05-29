@@ -313,9 +313,26 @@ let state = {
 };
 
 // --- API helpers ---
+// Robustly extract JSON from Gemini's response which may include markdown/extra text
+function extractJSON(txt) {
+  // Strip markdown code fences
+  let clean = txt.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  // Try parsing directly first
+  try { return JSON.parse(clean); } catch(e) {}
+  // Find the first { or [ and last } or ] and try that substring
+  const firstBrace = clean.search(/[{[]/);
+  const lastBrace = Math.max(clean.lastIndexOf('}'), clean.lastIndexOf(']'));
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    try { return JSON.parse(clean.slice(firstBrace, lastBrace + 1)); } catch(e) {}
+  }
+  return null;
+}
+
 async function callClaude(messages, systemPrompt) {
   const userMsg = messages[messages.length - 1]?.content || '';
-  const fullPrompt = systemPrompt ? systemPrompt + '\n\n' + userMsg : userMsg;
+  // Strongly remind Gemini to return ONLY JSON
+  const fullPrompt = (systemPrompt ? systemPrompt + '\n\n' : '') +
+    userMsg + '\n\nIMPORTANT: Reply with ONLY the raw JSON object. No explanation, no markdown, no backticks.';
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -332,8 +349,9 @@ Return JSON: {"valid": true/false, "reason": "brief reason if invalid", "is_germ
 A word is valid if: it exists in German vocabulary AND starts with "${mustStartWith}". Proper nouns are allowed. Accept any German word.`;
   try {
     const txt = await callClaude([{role:'user',content:msg}], sys);
-    const clean = txt.replace(/```json|```/g,'').trim();
-    return JSON.parse(clean);
+    const result = extractJSON(txt);
+    if (!result) return {valid: true, is_german: true};
+    return result;
   } catch(e) { return {valid: true, is_german: true}; }
 }
 
@@ -348,9 +366,12 @@ Return JSON: {"word": "the German word without article for game use", "display":
 If NO word exists at this level for this letter, return: {"word": null, "concede": true}`;
   try {
     const txt = await callClaude([{role:'user',content:msg}], sys);
-    const clean = txt.replace(/```json|```/g,'').trim();
-    return JSON.parse(clean);
-  } catch(e) { return {word: null, concede: true}; }
+    console.log('Gemini computer word raw:', txt);
+    const result = extractJSON(txt);
+    console.log('Gemini computer word parsed:', result);
+    if (!result) return {word: null, concede: true};
+    return result;
+  } catch(e) { console.error('getComputerWord error:', e); return {word: null, concede: true}; }
 }
 
 async function getWordInfo(word, level) {
@@ -359,8 +380,8 @@ async function getWordInfo(word, level) {
 Return JSON: {"word":"${word}", "display":"article + word if noun", "definition_en":"clear English definition", "example_de":"example sentence in German using this word", "example_en":"English translation", "level":"CEFR level"}`;
   try {
     const txt = await callClaude([{role:'user',content:msg}], sys);
-    const clean = txt.replace(/```json|```/g,'').trim();
-    return JSON.parse(clean);
+    const result = extractJSON(txt);
+    return result;
   } catch(e) { return null; }
 }
 
@@ -370,9 +391,8 @@ async function getStartLetters() {
 Return JSON: {"letters": ["A","B","C","D","E"]}`;
   try {
     const txt = await callClaude([{role:'user',content:msg}], sys);
-    const clean = txt.replace(/```json|```/g,'').trim();
-    const data = JSON.parse(clean);
-    return data.letters || ['A','E','I','S','T'];
+    const data = extractJSON(txt);
+    return data?.letters || ['A','E','I','S','T'];
   } catch(e) { return ['A','E','I','S','T']; }
 }
 
