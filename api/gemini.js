@@ -1,18 +1,22 @@
 const fetch = require('node-fetch');
 
-module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
+    return { statusCode: 500, body: JSON.stringify({ error: 'GEMINI_API_KEY not configured' }) };
   }
 
-  const { prompt } = req.body;
+  let body;
+  try { body = JSON.parse(event.body); }
+  catch { return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
+
+  const { prompt } = body;
   if (!prompt) {
-    return res.status(400).json({ error: 'Missing prompt' });
+    return { statusCode: 400, body: JSON.stringify({ error: 'Missing prompt' }) };
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
@@ -25,7 +29,8 @@ module.exports = async (req, res) => {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 1000,
+          maxOutputTokens: 500,
+          responseMimeType: 'application/json'  // Forces Gemini to return pure JSON always
         }
       })
     });
@@ -33,14 +38,21 @@ module.exports = async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json(data);
+      console.error('Gemini API error:', JSON.stringify(data));
+      return { statusCode: response.status, body: JSON.stringify(data) };
     }
 
-    // Extract text from Gemini response and return in simple format
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    res.json({ text });
+    console.log('Gemini response:', text);
+
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    };
 
   } catch (err) {
-    res.status(500).json({ error: 'Request failed', details: err.message });
+    console.error('Proxy error:', err);
+    return { statusCode: 500, body: JSON.stringify({ error: 'Request failed', details: err.message }) };
   }
 };
