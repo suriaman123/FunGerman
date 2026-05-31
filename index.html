@@ -337,39 +337,34 @@ async function callGemini(prompt) {
 }
 
 async function validateUserWord(word, mustStartWith, level) {
-  const prompt = `You are a German language expert. Reply with ONLY a JSON object, no other text.
-Task: Check if "${word}" is a valid German word starting with "${mustStartWith.toUpperCase()}".
-Rules: The first letter must match (case-insensitive). Any German word is allowed (nouns, verbs, adjectives). Proper nouns are OK.
-Reply ONLY with this exact JSON structure: {"valid": true, "is_german": true}
-Or if invalid: {"valid": false, "is_german": false, "reason": "why not"}`;
+  const prompt = `Is "${word}" a valid German word that starts with the letter ${mustStartWith.toUpperCase()}? Answer in JSON only.
+Example of valid response: {"valid":true,"is_german":true}
+Example of invalid response: {"valid":false,"is_german":false,"reason":"does not start with ${mustStartWith.toUpperCase()}"}
+Now answer for the word "${word}" starting with "${mustStartWith.toUpperCase()}":`;
   try {
     const txt = await callGemini(prompt);
+    console.log('validate raw:', txt);
     const result = extractJSON(txt);
-    console.log('validate:', word, '->', result);
+    console.log('validate parsed:', result);
     if (!result) return {valid: true, is_german: true};
     return result;
   } catch(e) { return {valid: true, is_german: true}; }
 }
 
 async function getComputerWord(mustStartWith, level, usedWords) {
-  const levelDesc = {A1:'very simple everyday words (cat, dog, red, eat, house)',A2:'basic words (school, weather, family, hobby)',B1:'intermediate words (travel, health, environment)',B2:'advanced words (abstract nouns, compound words)',C1:'complex vocabulary (technical, nuanced)',C2:'rare sophisticated words'};
-  const avoid = usedWords.length > 0 ? `Do NOT use any of these words: ${usedWords.join(', ')}.` : '';
-  const prompt = `You are a German vocabulary game. Reply with ONLY a JSON object, no other text.
-Task: Give ONE German word for level ${level} (${levelDesc[level]||'common words'}) that starts with the letter "${mustStartWith.toUpperCase()}".
-${avoid}
-The word must genuinely start with the letter ${mustStartWith.toUpperCase()}.
-If it is a noun, include the article (der/die/das) in the display field only.
-Reply ONLY with this exact JSON (no markdown, no explanation):
-{"word":"JUST_THE_WORD_NO_ARTICLE","display":"article Word","definition_en":"English meaning","example_de":"German example sentence","example_en":"English translation"}`;
+  const avoid = usedWords.length > 0 ? 'Do not use: ' + usedWords.join(', ') + '.' : '';
+  const prompt = `Give me one German word that starts with the letter ${mustStartWith.toUpperCase()} suitable for a ${level} level learner. ${avoid}
+Respond in JSON only, exactly like this example for the letter K:
+{"word":"Katze","display":"die Katze","definition_en":"cat","example_de":"Die Katze schläft.","example_en":"The cat sleeps."}
+Now give a word starting with ${mustStartWith.toUpperCase()}:`;
   try {
     const txt = await callGemini(prompt);
     console.log('computer word raw:', txt);
     const result = extractJSON(txt);
     console.log('computer word parsed:', result);
     if (!result || !result.word) return {word: null, concede: true};
-    // Safety check: make sure the word actually starts with the right letter
-    if (result.word[0].toUpperCase() !== mustStartWith.toUpperCase()) {
-      console.warn('Gemini gave wrong starting letter! Got:', result.word, 'needed:', mustStartWith);
+    if (result.word.trim()[0].toUpperCase() !== mustStartWith.toUpperCase()) {
+      console.warn('Wrong letter! Got:', result.word, 'needed:', mustStartWith);
       return {word: null, concede: true};
     }
     return result;
@@ -377,9 +372,9 @@ Reply ONLY with this exact JSON (no markdown, no explanation):
 }
 
 async function getWordInfo(word, level) {
-  const prompt = `You are a German language teacher. Reply with ONLY a JSON object, no other text.
-Task: Give information about the German word "${word}".
-Reply ONLY with this JSON: {"word":"${word}","display":"article + word if noun, else just word","definition_en":"clear English definition","example_de":"example sentence in German","example_en":"English translation","level":"A1/A2/B1/B2/C1/C2"}`;
+  const prompt = `Give me information about the German word "${word}". Respond in JSON only, like this example:
+{"word":"Katze","display":"die Katze","definition_en":"cat","example_de":"Die Katze schläft.","example_en":"The cat sleeps.","level":"A1"}
+Now for the word "${word}":`;
   try {
     const txt = await callGemini(prompt);
     return extractJSON(txt);
@@ -387,14 +382,14 @@ Reply ONLY with this JSON: {"word":"${word}","display":"article + word if noun, 
 }
 
 async function getStartLetters() {
-  const prompt = `Reply with ONLY a JSON object, no other text.
-Give 6 good starting letters for a German word game at ${state.level} level. Mix consonants and vowels.
-Reply ONLY with: {"letters":["A","B","E","S","T","W"]}`;
+  const prompt = `Give me 6 uppercase letters of the German alphabet good for starting words at ${state.level} level. Include vowels. Respond in JSON only like this example:
+{"letters":["A","B","E","K","S","T"]}
+Now give 6 letters:`;
   try {
     const txt = await callGemini(prompt);
     const data = extractJSON(txt);
-    return data?.letters || ['A','E','B','S','T','W'];
-  } catch(e) { return ['A','E','B','S','T','W']; }
+    return data?.letters || ['A','E','B','K','S','T'];
+  } catch(e) { return ['A','E','B','K','S','T']; }
 }
 
 // --- Toast ---
