@@ -19,31 +19,37 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing prompt' }) };
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   try {
+    const geminiBody = {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 500
+      }
+    };
+
+    console.log('Calling Gemini with prompt length:', prompt.length);
+
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 500,
-          responseMimeType: 'application/json'  // Forces Gemini to return pure JSON always
-        }
-      })
+      body: JSON.stringify(geminiBody)
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Gemini API error:', JSON.stringify(data));
-      return { statusCode: response.status, body: JSON.stringify(data) };
+      console.error('Gemini error:', JSON.stringify(data));
+      return {
+        statusCode: response.status,
+        body: JSON.stringify({ error: 'Gemini API error', details: data })
+      };
     }
 
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    console.log('Gemini response:', text);
+    console.log('Gemini raw response:', text);
 
     return {
       statusCode: 200,
@@ -52,7 +58,10 @@ exports.handler = async (event) => {
     };
 
   } catch (err) {
-    console.error('Proxy error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Request failed', details: err.message }) };
+    console.error('Function error:', err.message);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message })
+    };
   }
 };
