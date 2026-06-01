@@ -2,4 +2,4 @@ name = "fungerman"
 pages_build_output_dir = "."
 
 [vars]
-GEMINI_API_KEY = "AQ.Ab8RN6JpRhXdVRQuVEyqV8IkvTZEqWTBpBcxCxe8iEIeGdw2XA"
+GEMINI_API_KEY = "AQ.AQ.Ab8RN6JqXaTXawkrmr_m1kgbtKAK2IglvLbNmnqyMwkzTRHDUA"
