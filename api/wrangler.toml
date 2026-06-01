@@ -1,0 +1,5 @@
+name = "fungerman"
+pages_build_output_dir = "."
+
+[vars]
+GEMINI_API_KEY = "REPLACE_WITH_YOUR_KEY"
