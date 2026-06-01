@@ -331,9 +331,26 @@ async function callGemini(prompt) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt })
     });
-    const data = await res.json();
-    return data.text || '';
-  } catch(e) { console.error('API call failed:', e); return ''; }
+    const rawText = await res.text();
+    console.log('HTTP status:', res.status);
+    console.log('Raw response:', rawText);
+    if (!res.ok) {
+      console.error('Server error:', res.status, rawText);
+      showToast('API error ' + res.status + ': ' + rawText.slice(0,100), 'err');
+      return '';
+    }
+    try {
+      const data = JSON.parse(rawText);
+      return data.text || '';
+    } catch(e) {
+      console.error('JSON parse failed:', rawText);
+      return '';
+    }
+  } catch(e) {
+    console.error('Fetch failed:', e);
+    showToast('Network error: ' + e.message, 'err');
+    return '';
+  }
 }
 
 async function validateUserWord(word, mustStartWith, level) {
